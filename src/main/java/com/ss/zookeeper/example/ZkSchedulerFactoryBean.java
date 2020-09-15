@@ -3,7 +3,6 @@ package com.ss.zookeeper.example;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
-import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.quartz.Scheduler;
@@ -68,33 +67,4 @@ public class ZkSchedulerFactoryBean extends SchedulerFactoryBean {
         CloseableUtils.closeQuietly(leaderLatch);
         super.destroy();
     }
-
-    class ZkLeaderLatchListener implements LeaderLatchListener {
-
-        private String ip;
-
-        private SchedulerFactoryBean schedulerFactoryBean;
-
-        public ZkLeaderLatchListener(String ip, SchedulerFactoryBean schedulerFactoryBean) {
-            this.ip = ip;
-            this.schedulerFactoryBean = schedulerFactoryBean;
-        }
-
-        @Override
-        public void isLeader() {
-            //如果变为leader节点 则需要将autoStartup变为true
-            //并且启动任务
-            schedulerFactoryBean.setAutoStartup(true);
-            schedulerFactoryBean.start();
-        }
-
-        @Override
-        public void notLeader() {
-            //如果不是leader节点 ，则需要将autoStartup变为false
-            //并且 停止任务
-            schedulerFactoryBean.setAutoStartup(false);
-            schedulerFactoryBean.stop();
-        }
-    }
-
 }
