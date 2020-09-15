@@ -1,6 +1,8 @@
 package com.ss.zookeeper.example;
 
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 /**
@@ -10,6 +12,8 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
  * @date 2020/9/15
  */
 public class ZkLeaderLatchListener implements LeaderLatchListener {
+
+    private static final Logger LOG= LoggerFactory.getLogger(ZkSchedulerFactoryBean.class);
 
     private String ip;
 
@@ -22,6 +26,7 @@ public class ZkLeaderLatchListener implements LeaderLatchListener {
 
     @Override
     public void isLeader() {
+        LOG.info("ip:{} 成为leader，执行scheduler~",ip);
         //如果变为leader节点 则需要将autoStartup变为true
         //并且启动任务
         schedulerFactoryBean.setAutoStartup(true);
